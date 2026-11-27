@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}ابدأ مشروع تخرجك مع SmartGrad{% else %}Start your graduation project with SmartGrad{% endif %}{% endblock %}
+{% block content %}
+<section class="landing-hero">
+  <div class="landing-copy">
+    <span class="landing-pill"><span class="landing-pulse"></span>{% if LANGUAGE_CODE == 'ar' %}مساحة أذكى لمشروع تخرجك{% else %}A smarter space for your graduation project{% endif %}</span>
+    <img class="landing-logo" src="{% static 'images/smartgrad-brand.png' %}" alt="{% if LANGUAGE_CODE == 'ar' %}شعار SmartGrad — منصة أكاديمية بالذكاء الاصطناعي{% else %}SmartGrad — AI Academic Platform{% endif %}">
+    <p>{% if LANGUAGE_CODE == 'ar' %}من أول فكرة إلى آخر تسليم، اجمع فريقك ونظّم مهامك وتابع تقدم مشروعك في مكان واحد.{% else %}From the first idea to the final submission, bring your team together, organize tasks, and track your project in one place.{% endif %}</p>
+    <div class="landing-actions">
+      <a class="landing-primary" href="{% url 'welcome' %}">{% if LANGUAGE_CODE == 'ar' %}ابدأ الآن{% else %}Get started{% endif %}<span aria-hidden="true">→</span></a>
+      <a class="landing-secondary" href="{% url 'projects' %}">{% if LANGUAGE_CODE == 'ar' %}استكشف المشاريع{% else %}Explore projects{% endif %}</a>
+    </div>
+    <div class="landing-proof">
+      <span class="proof-icon" aria-hidden="true">✦</span>
+      {% if LANGUAGE_CODE == 'ar' %}خطوتك الأولى نحو تجربة مشروع أكثر تنظيماً{% else %}Your first step toward a more organized project experience{% endif %}
+    </div>
+  </div>
+
+  <div class="landing-art" aria-hidden="true">
+    <div class="art-orbit orbit-one"></div>
+    <div class="art-orbit orbit-two"></div>
+    <div class="art-spark spark-one">✦</div>
+    <div class="art-spark spark-two">✧</div>
+    <div class="project-preview">
+      <div class="preview-top"><span class="preview-logo">S</span><span class="preview-menu"><i></i><i></i><i></i></span></div>
+      <div class="preview-label">{% if LANGUAGE_CODE == 'ar' %}مساحة المشروع{% else %}PROJECT WORKSPACE{% endif %}</div>
+      <div class="preview-title">{% if LANGUAGE_CODE == 'ar' %}مشروع التخرج{% else %}Graduation project{% endif %}</div>
+      <div class="preview-progress"><span></span></div>
+      <div class="preview-meta"><span>{% if LANGUAGE_CODE == 'ar' %}تقدم المشروع{% else %}Project progress{% endif %}</span><strong>72%</strong></div>
+      <div class="preview-divider"></div>
+      <div class="preview-task"><span class="task-check">✓</span><span>{% if LANGUAGE_CODE == 'ar' %}تحليل المتطلبات{% else %}Requirements analysis{% endif %}</span><b>{% if LANGUAGE_CODE == 'ar' %}مكتمل{% else %}Done{% endif %}</b></div>
+      <div class="preview-task"><span class="task-current">↗</span><span>{% if LANGUAGE_CODE == 'ar' %}تصميم النموذج الأولي{% else %}Prototype design{% endif %}</span><b class="task-status">{% if LANGUAGE_CODE == 'ar' %}جارٍ{% else %}In progress{% endif %}</b></div>
+      <div class="preview-team"><span class="team-avatar avatar-a">A</span><span class="team-avatar avatar-b">M</span><span class="team-avatar avatar-c">R</span><span class="team-caption">{% if LANGUAGE_CODE == 'ar' %}فريقك، في مكان واحد{% else %}Your team, all in one place{% endif %}</span></div>
+    </div>
+    <div class="art-note"><span>✦</span>{% if LANGUAGE_CODE == 'ar' %}كل خطوة تصنع فرقاً{% else %}Every step moves you forward{% endif %}</div>
+  </div>
+</section>
+
+<section class="landing-highlights" aria-label="{% if LANGUAGE_CODE == 'ar' %}مزايا SmartGrad{% else %}SmartGrad highlights{% endif %}">
+  <div><span class="highlight-icon">⌘</span><span><strong>{% if LANGUAGE_CODE == 'ar' %}نظّم العمل{% else %}Stay organized{% endif %}</strong><small>{% if LANGUAGE_CODE == 'ar' %}مهام ومواعيد واضحة{% else %}Tasks and deadlines in view{% endif %}</small></span></div>
+  <div><span class="highlight-icon">♧</span><span><strong>{% if LANGUAGE_CODE == 'ar' %}تعاون مع فريقك{% else %}Work as a team{% endif %}</strong><small>{% if LANGUAGE_CODE == 'ar' %}تواصل وتقدم مشترك{% else %}Collaborate and make progress{% endif %}</small></span></div>
+  <div><span class="highlight-icon">✧</span><span><strong>{% if LANGUAGE_CODE == 'ar' %}تابع تقدمك{% else %}Track your progress{% endif %}</strong><small>{% if LANGUAGE_CODE == 'ar' %}رؤية أوضح للإنجاز{% else %}A clearer view of milestones{% endif %}</small></span></div>
+</section>
+{% endblock %}

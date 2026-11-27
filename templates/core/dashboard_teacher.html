@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}لوحة الأستاذ{% else %}Teacher Dashboard{% endif %} · SmartGrad{% endblock %}
+{% block content %}
+<div class="hero teacher-hero"><div><div class="eyebrow">SMARTGRAD · SUPERVISOR CONSOLE</div><h1>{% if LANGUAGE_CODE == 'ar' %}مرحباً أستاذ {{ user.first_name|default:user.username }}{% else %}Welcome, {{ user.first_name|default:user.username }}{% endif %}</h1><p>{% if LANGUAGE_CODE == 'ar' %}تابع المجموعات والطلاب والمهام والتسليمات من لوحة إشراف موحدة.{% else %}Monitor groups, students, assignments and submissions from one workspace.{% endif %}</p></div><div class="hero-mark">♙</div></div>
+<div class="stats"><div class="stat"><span>{% if LANGUAGE_CODE == 'ar' %}المجموعات التي تشرف عليها{% else %}Supervised groups{% endif %}</span><strong>{{ groups|length }}</strong></div><div class="stat"><span>{% if LANGUAGE_CODE == 'ar' %}إجمالي الطلاب{% else %}Students{% endif %}</span><strong>{{ student_count }}</strong></div><div class="stat"><span>{% if LANGUAGE_CODE == 'ar' %}طلبات انضمام معلقة{% else %}Pending join requests{% endif %}</span><strong>{{ pending_join_requests }}</strong></div></div>
+<div class="teacher-toolbar"><div><h2>{% if LANGUAGE_CODE == 'ar' %}إدارة المجموعات{% else %}Group management{% endif %}</h2><p>{% if LANGUAGE_CODE == 'ar' %}افتح المجموعة لمراجعة جدول المهام والتحليلات وطلبات الانضمام.{% else %}Open a group to review tasks, analytics and join requests.{% endif %}</p></div><div class="actions-row"><a class="primary" href="{% url 'create_group' %}">＋ {% if LANGUAGE_CODE == 'ar' %}إنشاء مجموعة{% else %}Create group{% endif %}</a><a class="secondary" href="{% url 'ai_settings' %}">{% if LANGUAGE_CODE == 'ar' %}إعدادات AI{% else %}AI settings{% endif %}</a><a class="secondary" href="{% url 'teacher_summary' %}">{% if LANGUAGE_CODE == 'ar' %}ملخص المجموعات{% else %}Group summary{% endif %}</a><a class="secondary" href="{% url 'student_report' %}">{% if LANGUAGE_CODE == 'ar' %}تقاريري{% else %}My report{% endif %}</a></div></div><div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}ملخص متابعة الذكاء الاصطناعي{% else %}AI supervision summary{% endif %}</h2></div><div class="card ai-card">
+    <div class="analytics-grid">
+        <div><strong>{{ teacher_monitoring.completion_rate }}%</strong><small>{% if LANGUAGE_CODE == 'ar' %}نسبة الإنجاز{% else %}Completion{% endif %}</small></div>
+        <div><strong>{{ teacher_monitoring.overdue }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}متأخرة{% else %}Overdue{% endif %}</small></div>
+        <div><strong>{{ teacher_monitoring.due_soon }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}قريبة{% else %}Due soon{% endif %}</small></div>
+    </div>
+    {% if teacher_monitoring.at_risk_groups %}
+        <ul>
+            {% for group in teacher_monitoring.at_risk_groups %}
+                <li><strong>{{ group.name }}</strong> · {% if LANGUAGE_CODE == 'ar' %}متأخرة{% else %}overdue{% endif %}: {{ group.overdue }} · {% if LANGUAGE_CODE == 'ar' %}قريبة{% else %}due soon{% endif %}: {{ group.due_soon }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{% if LANGUAGE_CODE == 'ar' %}لا توجد مؤشرات خطر حالياً في المجموعات التي تشرف عليها.{% else %}No immediate risk signals in your supervised groups.{% endif %}</p>
+    {% endif %}
+</div>
+<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}تنبيهات المواعيد{% else %}Deadline alerts{% endif %}</h2></div>
+<div class="card">
+    {% if deadline_alerts %}
+        <ul>
+            {% for alert in deadline_alerts %}
+                <li><strong>{{ alert.label }}</strong> · {{ alert.task.title }} · {{ alert.detail }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{% if LANGUAGE_CODE == 'ar' %}لا توجد تنبيهات حالياً.{% else %}No deadline alerts right now.{% endif %}</p>
+    {% endif %}
+</div>
+<div class="cards">{% for group in groups %}<a class="group-card" href="{% url 'group_detail' group.pk %}"><span class="group-icon">▦</span><h3>{{ group.name }}</h3><p>{{ group.members.count }} {% if LANGUAGE_CODE == 'ar' %}طلاب{% else %}students{% endif %} · {{ group.tasks.count }} {% if LANGUAGE_CODE == 'ar' %}مهام{% else %}tasks{% endif %}</p><span class="arrow">←</span></a>{% empty %}<div class="empty">{% if LANGUAGE_CODE == 'ar' %}لا تشرف على مجموعات حتى الآن. أنشئ مجموعة أو اطلب من قائدة المجموعة إضافتك كمشرف.{% else %}No supervised groups yet. Create a group or ask a group leader to add you as a supervisor.{% endif %}</div>{% endfor %}</div>
+<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}متابعة المهام في جميع المجموعات{% else %}Tasks across your groups{% endif %}</h2></div><div class="card table-wrap"><table><thead><tr><th>{% if LANGUAGE_CODE == 'ar' %}المهمة{% else %}Task{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}المجموعة{% else %}Group{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}المسؤول{% else %}Assignee{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}الحالة{% else %}Status{% endif %}</th></tr></thead><tbody>{% for task in tasks %}<tr><td>{{ task.title }}</td><td><a href="{% url 'group_detail' task.group.pk %}">{{ task.group.name }}</a></td><td>{% if task.assigned_to_id %}{{ task.assigned_to.get_full_name|default:task.assigned_to.username }}{% else %}{% if LANGUAGE_CODE == 'ar' %}المجموعة{% else %}Group{% endif %}{% endif %}</td><td><span class="status {{ task.status }}">{{ task.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="4">{% if LANGUAGE_CODE == 'ar' %}لا توجد مهام في المجموعات التي تشرف عليها.{% else %}No tasks in your supervised groups yet.{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+{% if notices %}<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}آخر الإشعارات{% else %}Recent notifications{% endif %}</h2></div><div class="card">{% for n in notices %}<p class="notice">• {{ n.message }} <small>{{ n.created_at|date:'Y-m-d H:i' }}</small></p>{% endfor %}</div>{% endif %}
+{% endblock %}

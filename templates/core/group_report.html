@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} · {% if LANGUAGE_CODE == 'ar' %}لوحة التقرير الذكي{% else %}Smart report{% endif %} · SmartGrad{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ group.name }}</h1>
+  <p>{% if LANGUAGE_CODE == 'ar' %}لوحة التقارير الذكية للمجموعة{% else %}Smart reporting dashboard for the group{% endif %}</p>
+</div>
+
+<div class="card ai-card">
+  <div class="analytics-grid">
+    <div><strong>{{ report.metrics.completion_rate }}%</strong><small>{% if LANGUAGE_CODE == 'ar' %}نسبة الإنجاز{% else %}Completion{% endif %}</small></div>
+    <div><strong>{{ report.metrics.overdue }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}متأخرة{% else %}Overdue{% endif %}</small></div>
+    <div><strong>{{ report.metrics.due_soon }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}قريبة{% else %}Due soon{% endif %}</small></div>
+    <div><strong>{{ report.metrics.total }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}إجمالي المهام{% else %}Tasks{% endif %}</small></div>
+  </div>
+  <p><strong>{% if LANGUAGE_CODE == 'ar' %}الحالة العامة{% else %}Overall status{% endif %}:</strong> {{ report.summary }}</p>
+</div>
+
+<div class="card section-block">
+  <h2>{% if LANGUAGE_CODE == 'ar' %}توصيات خطة المشروع{% else %}Project recommendations{% endif %}</h2>
+  <ul>
+    {% for step in report.plan.recommendations %}
+      <li><strong>{{ step.phase }}</strong> · {{ step.title }} · <em>{{ step.priority }}</em><br>{{ step.description }}</li>
+    {% empty %}
+      <li>{% if LANGUAGE_CODE == 'ar' %}لا توجد توصيات حالياً.{% else %}No recommendations available yet.{% endif %}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card section-block">
+  <h2>{% if LANGUAGE_CODE == 'ar' %}مؤشرات الطلاب{% else %}Student breakdown{% endif %}</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{% if LANGUAGE_CODE == 'ar' %}الطالب{% else %}Student{% endif %}</th>
+          <th>{% if LANGUAGE_CODE == 'ar' %}المهام{% else %}Tasks{% endif %}</th>
+          <th>{% if LANGUAGE_CODE == 'ar' %}الإنجاز{% else %}Progress{% endif %}</th>
+          <th>{% if LANGUAGE_CODE == 'ar' %}المتأخرة{% else %}Overdue{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in report.students %}
+          <tr>
+            <td>{{ row.student.get_full_name|default:row.student.username }}</td>
+            <td>{{ row.metrics.total }}</td>
+            <td>{{ row.metrics.completion_rate }}%</td>
+            <td>{{ row.metrics.overdue }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">{% if LANGUAGE_CODE == 'ar' %}لا يوجد طلاب في هذه المجموعة بعد.{% else %}No students are in this group yet.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if can_manage %}
+  <div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}إجراءات الإدارة{% else %}Management actions{% endif %}</h2></div>
+  <div class="card">
+    <a class="primary small" href="{% url 'create_task' group.pk %}">＋ {% if LANGUAGE_CODE == 'ar' %}إضافة مهمة{% else %}Add task{% endif %}</a>
+    <a class="secondary small" href="{% url 'create_ai_plan' group.pk %}">{% if LANGUAGE_CODE == 'ar' %}إنشاء خطة ذكية{% else %}Generate smart plan{% endif %}</a>
+  </div>
+{% endif %}
+{% endblock %}

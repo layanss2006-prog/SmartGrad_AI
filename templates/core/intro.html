@@ -1,0 +1,21 @@
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e8e8e8">
+  <title>{% if LANGUAGE_CODE == 'ar' %}مرحباً بك في SmartGrad{% else %}SmartGrad Portal{% endif %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'images/smartgrad-logo.png' %}">
+</head>
+<body class="intro-page">
+  <main class="intro-panel">
+    <img class="intro-logo" src="{% static 'images/smartgrad-brand.png' %}" alt="{% if LANGUAGE_CODE == 'ar' %}SmartGrad - منصة أكاديمية بالذكاء الاصطناعي{% else %}SmartGrad AI Academic Platform{% endif %}">
+    <h1>{% if LANGUAGE_CODE == 'ar' %}بوابة SmartGrad{% else %}SmartGrad Portal{% endif %}</h1>
+    <p>{% if LANGUAGE_CODE == 'ar' %}مرحباً بك في وجهتك الأكاديمية. صُممت المنصة خصيصاً لتنظيم مشاريع التخرج في علوم الحاسب وتعزيز التعاون بين فرق العمل.{% else %}Welcome to your ultimate academic hub. Designed specifically to streamline Computer Science graduation projects and collaboration workflows.{% endif %}</p>
+    <a class="intro-start" href="{% url 'main_landing' %}">{% if LANGUAGE_CODE == 'ar' %}ابدأ الآن{% else %}Get Started{% endif %}<span aria-hidden="true">🚀</span></a>
+  </main>
+</body>
+</html>

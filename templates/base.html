@@ -1,0 +1,86 @@
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1d4ed8">
+<title>{% block title %}SmartGrad{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="icon" type="image/png" href="{% static 'images/smartgrad-logo.png' %}">
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="/" aria-label="SmartGrad"><img src="{% static 'images/smartgrad-logo.png' %}" alt=""><span>SmartGrad</span></a>
+<nav>
+<form class="language-form" method="post" action="{% url 'set_language' %}">
+{% csrf_token %}
+<input type="hidden" name="next" value="{{ request.get_full_path }}">
+<select name="language" aria-label="{% if LANGUAGE_CODE == 'ar' %}اللغة{% else %}Language{% endif %}" onchange="this.form.submit()">
+<option value="ar" {% if LANGUAGE_CODE == 'ar' %}selected{% endif %}>العربية</option>
+<option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+</select>
+</form>
+<a href="{% url 'about' %}">{% if LANGUAGE_CODE == 'ar' %}عن المشروع{% else %}About{% endif %}</a>
+<a href="{% url 'projects' %}">{% if LANGUAGE_CODE == 'ar' %}المشاريع{% else %}Projects{% endif %}</a>
+{% if user.is_authenticated %}
+<span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+<a href="/">{% if LANGUAGE_CODE == 'ar' %}لوحة التحكم{% else %}Dashboard{% endif %}</a>
+<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="linkbtn">{% if LANGUAGE_CODE == 'ar' %}خروج{% else %}Log out{% endif %}</button></form>
+{% else %}
+<a href="{% url 'login' %}">{% if LANGUAGE_CODE == 'ar' %}دخول{% else %}Log in{% endif %}</a>
+<a href="{% url 'register' %}">{% if LANGUAGE_CODE == 'ar' %}إنشاء حساب{% else %}Create account{% endif %}</a>
+{% endif %}
+</nav></header>
+<div id="live-notices" class="live-notices" aria-live="polite"></div>
+<main class="container">
+{% if request.path != "/" and request.path != "/home/" and request.path != "/welcome/" %}
+<button class="back-button" type="button" id="back-button" aria-label="{% if LANGUAGE_CODE == 'ar' %}الرجوع إلى الصفحة السابقة{% else %}Go back to previous page{% endif %}">
+  <span aria-hidden="true">→</span>
+  <span>{% if LANGUAGE_CODE == 'ar' %}رجوع{% else %}Back{% endif %}</span>
+</button>
+{% endif %}
+{% if messages %}{% for message in messages %}<div class="message">{{ message }}</div>{% endfor %}{% endif %}
+{% block content %}{% endblock %}
+</main>
+<footer>{% if LANGUAGE_CODE == 'ar' %}SmartGrad · تنظيم العمل الأكاديمي بمساعدة الذكاء الاصطناعي{% else %}SmartGrad · Organize academic work with the help of AI{% endif %}</footer>
+
+<script>
+(() => {
+  const button = document.getElementById("back-button");
+  if (!button) return;
+  button.addEventListener("click", () => {
+    if (window.history.length > 1 && document.referrer) {
+      window.history.back();
+    } else {
+      window.location.href = "/";
+    }
+  });
+})();
+</script>
+
+{% if user.is_authenticated %}
+<script>
+(() => {
+  const box = document.getElementById("live-notices");
+  const scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
+  const socket = new WebSocket(scheme + window.location.host + "/ws/notifications/");
+  socket.onmessage = (event) => {
+    try {
+      const item = JSON.parse(event.data);
+      const toast = document.createElement("div");
+      toast.className = "live-toast";
+      const title = document.createElement("strong");
+      title.textContent = "{% if LANGUAGE_CODE == 'ar' %}إشعار جديد{% else %}New notification{% endif %}";
+      const body = document.createElement("span");
+      body.textContent = item.message || "";
+      toast.append(title, body);
+      box.prepend(toast);
+      while (box.children.length > 4) box.lastElementChild.remove();
+    } catch (e) { /* Ignore malformed event payloads. */ }
+  };
+  socket.onclose = () => {};
+})();
+</script>
+{% endif %}
+</body></html>

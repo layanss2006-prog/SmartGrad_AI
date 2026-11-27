@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}منصات مشابهة{% else %}Similar platforms{% endif %}{% endblock %}
+{% block content %}
+<section class="hero projects-hero">
+  <div>
+    <div class="eyebrow">SMARTGRAD · PROJECT EXPLORER</div>
+    <h1>{% if LANGUAGE_CODE == 'ar' %}اكتشف منصات مشابهة{% else %}Discover similar platforms{% endif %}</h1>
+    <p>{% if LANGUAGE_CODE == 'ar' %}تعرّف على مواقع تساعد الفرق على تنظيم المشاريع والمهام والتعاون — ويمكنك زيارتها دون تسجيل الدخول إلى SmartGrad.{% else %}Explore websites that help teams organize projects, tasks, and collaboration—no SmartGrad account required.{% endif %}</p>
+  </div>
+  <div class="hero-mark" aria-hidden="true">⌕</div>
+</section>
+
+<div class="project-grid">
+  <article class="card project-card">
+    <span class="project-tag">{% if LANGUAGE_CODE == 'ar' %}لوحات المهام{% else %}Task boards{% endif %}</span>
+    <h2>Trello</h2>
+    <p>{% if LANGUAGE_CODE == 'ar' %}نظّم عمل الفريق باستخدام اللوحات والبطاقات وقوائم المهام ومواعيد التسليم.{% else %}Organize team work with boards, cards, task lists, and due dates.{% endif %}</p>
+    <a class="project-link" href="https://trello.com/" target="_blank" rel="noopener noreferrer">{% if LANGUAGE_CODE == 'ar' %}زيارة موقع Trello{% else %}Visit Trello{% endif %} ↗</a>
+  </article>
+
+  <article class="card project-card">
+    <span class="project-tag">{% if LANGUAGE_CODE == 'ar' %}إدارة العمل الجماعي{% else %}Team work management{% endif %}</span>
+    <h2>Asana</h2>
+    <p>{% if LANGUAGE_CODE == 'ar' %}تابع المشاريع والمهام والمسؤوليات ومراحل الإنجاز ضمن مساحة عمل مشتركة.{% else %}Track projects, tasks, ownership, and milestones in a shared workspace.{% endif %}</p>
+    <a class="project-link" href="https://asana.com/" target="_blank" rel="noopener noreferrer">{% if LANGUAGE_CODE == 'ar' %}زيارة موقع Asana{% else %}Visit Asana{% endif %} ↗</a>
+  </article>
+
+  <article class="card project-card">
+    <span class="project-tag">{% if LANGUAGE_CODE == 'ar' %}مساحة عمل مرنة{% else %}Flexible workspace{% endif %}</span>
+    <h2>Notion</h2>
+    <p>{% if LANGUAGE_CODE == 'ar' %}اجمع توثيق المشروع وملاحظات الفريق وقواعد البيانات والمهام في مساحة واحدة.{% else %}Bring project documentation, team notes, databases, and tasks together in one workspace.{% endif %}</p>
+    <a class="project-link" href="https://www.notion.so/" target="_blank" rel="noopener noreferrer">{% if LANGUAGE_CODE == 'ar' %}زيارة موقع Notion{% else %}Visit Notion{% endif %} ↗</a>
+  </article>
+
+  <article class="card project-card">
+    <span class="project-tag">{% if LANGUAGE_CODE == 'ar' %}تخطيط المشاريع{% else %}Project planning{% endif %}</span>
+    <h2>Jira</h2>
+    <p>{% if LANGUAGE_CODE == 'ar' %}خطّط للعمل، ووزّع المهام، وتابع سير المشروع ومراحله مع فريقك.{% else %}Plan work, assign tasks, and follow your team's project workflow and milestones.{% endif %}</p>
+    <a class="project-link" href="https://www.atlassian.com/software/jira" target="_blank" rel="noopener noreferrer">{% if LANGUAGE_CODE == 'ar' %}زيارة موقع Jira{% else %}Visit Jira{% endif %} ↗</a>
+  </article>
+
+  <article class="card project-card">
+    <span class="project-tag">{% if LANGUAGE_CODE == 'ar' %}إدارة المشاريع والفرق{% else %}Project and team management{% endif %}</span>
+    <h2>ClickUp</h2>
+    <p>{% if LANGUAGE_CODE == 'ar' %}أدر المهام والأهداف والوثائق وتعاون الفريق من منصة واحدة.{% else %}Manage tasks, goals, documents, and team collaboration from one platform.{% endif %}</p>
+    <a class="project-link" href="https://clickup.com/" target="_blank" rel="noopener noreferrer">{% if LANGUAGE_CODE == 'ar' %}زيارة موقع ClickUp{% else %}Visit ClickUp{% endif %} ↗</a>
+  </article>
+
+  <article class="card project-card">
+    <span class="project-tag">{% if LANGUAGE_CODE == 'ar' %}التعاون والإنتاجية{% else %}Collaboration and productivity{% endif %}</span>
+    <h2>Microsoft Planner</h2>
+    <p>{% if LANGUAGE_CODE == 'ar' %}أنشئ خططاً للفريق، وأسند المهام، وشارك التحديثات وتابع الإنجاز.{% else %}Create team plans, assign tasks, share updates, and track progress.{% endif %}</p>
+    <a class="project-link" href="https://www.microsoft.com/microsoft-365/business/task-management-software" target="_blank" rel="noopener noreferrer">{% if LANGUAGE_CODE == 'ar' %}زيارة موقع Microsoft Planner{% else %}Visit Microsoft Planner{% endif %} ↗</a>
+  </article>
+</div>
+<p class="projects-note">{% if LANGUAGE_CODE == 'ar' %}روابط لمواقع خارجية مستقلة عن SmartGrad. قد تختلف المزايا أو تتطلب إنشاء حساب لدى الموقع نفسه.{% else %}These links lead to third-party websites independent of SmartGrad. Features may vary or require an account with the respective website.{% endif %}</p>
+{% endblock %}

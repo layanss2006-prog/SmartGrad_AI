@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block title %}{% if LANGUAGE_CODE == 'ar' %}إنشاء حساب{% else %}Create account{% endif %}{% endblock %}
+{% block content %}<section class="auth card"><div class="eyebrow">{% if LANGUAGE_CODE == 'ar' %}ابدأ رحلتك{% else %}GET STARTED{% endif %}</div><h1>{% if LANGUAGE_CODE == 'ar' %}إنشاء حساب جديد{% else %}Create your account{% endif %}</h1><form method="post">{% csrf_token %}{{ form.as_p }}<button class="primary">{% if LANGUAGE_CODE == 'ar' %}إنشاء الحساب{% else %}Create account{% endif %}</button></form></section>{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}عن SmartGrad{% else %}About SmartGrad{% endif %}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <div class="eyebrow">SMARTGRAD</div>
+    <h1>{% if LANGUAGE_CODE == 'ar' %}عن المشروع{% else %}About the project{% endif %}</h1>
+    <p>{% if LANGUAGE_CODE == 'ar' %}مساحة واحدة لتنظيم مشاريع التخرج والعمل الأكاديمي الجماعي.{% else %}One workspace for graduation projects and collaborative academic work.{% endif %}</p>
+  </div>
+  <div class="hero-mark" aria-hidden="true">✦</div>
+</section>
+
+<section class="card about-content">
+  <h2>{% if LANGUAGE_CODE == 'ar' %}فكرة SmartGrad{% else %}The idea behind SmartGrad{% endif %}</h2>
+  <p>
+    {% if LANGUAGE_CODE == 'ar' %}
+      SmartGrad منصة أكاديمية تساعد الطلاب والمشرفين على إدارة مشاريع التخرج والعمل الجماعي من مكان واحد. يمكن للطلاب تكوين مجموعات دراسية، والانضمام إليها، وتوزيع المهام ومتابعة مواعيدها وتسليم الملفات، بينما يستطيع المشرفون متابعة تقدم المجموعات والطلاب.
+    {% else %}
+      SmartGrad is an academic platform that helps students and supervisors manage graduation projects and collaborative work in one place. Students can create and join study groups, divide work into tasks, track deadlines, and submit files, while supervisors follow the progress of groups and students.
+    {% endif %}
+  </p>
+  <h2>{% if LANGUAGE_CODE == 'ar' %}كيف تساعد المنصة؟{% else %}How the platform helps{% endif %}</h2>
+  <p>
+    {% if LANGUAGE_CODE == 'ar' %}
+      تجمع المنصة المهام والتسليمات ومؤشرات الإنجاز في مساحة منظمة، وترسل إشعارات فورية بالتحديثات المهمة. كما تقدم تحليلات وملخصات وتوصيات مدعومة بالذكاء الاصطناعي لمساعدة الفريق على معرفة الأولويات ومواطن التأخر. وتعتمد هذه التحليلات على مؤشرات مجمعة، لا على أسماء الطلاب أو أرقامهم الجامعية.
+    {% else %}
+      The platform brings tasks, submissions, and progress indicators into an organized workspace and sends real-time notifications about important updates. AI-assisted analytics, summaries, and recommendations help teams identify priorities and delays. These analytics use aggregated indicators rather than student names or university IDs.
+    {% endif %}
+  </p>
+</section>
+{% endblock %}

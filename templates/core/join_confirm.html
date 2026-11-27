@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth card">
+  <div class="eyebrow">SMARTGRAD · GROUP INVITATION</div>
+  <h1>{% if LANGUAGE_CODE == 'ar' %}طلب الانضمام إلى مجموعة{% else %}Request to join group{% endif %}</h1>
+  <p><strong>{{ group.name }}</strong></p>
+  <p class="muted">{{ group.description }}</p>
+  <form method="post">{% csrf_token %}
+    <button class="primary">{% if LANGUAGE_CODE == 'ar' %}إرسال طلب الانضمام{% else %}Send join request{% endif %}</button>
+  </form>
+</section>
+{% endblock %}

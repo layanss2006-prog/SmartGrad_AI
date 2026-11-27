@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}إعدادات الذكاء الاصطناعي{% else %}AI settings{% endif %} · SmartGrad{% endblock %}
+{% block content %}
+<div class="hero compact">
+    <div>
+        <div class="eyebrow">SMARTGRAD · AI CONTROL</div>
+        <h1>{% if LANGUAGE_CODE == 'ar' %}إعدادات الذكاء الاصطناعي{% else %}AI settings{% endif %}</h1>
+        <p>{% if LANGUAGE_CODE == 'ar' %}اضبط الاتصال بخدمة OpenAI لاستخدام تحليل الفريق، تقدير التقدم، وتوصيات الإدارة الأكاديمية.{% else %}Connect the OpenAI service to generate project analysis, progress alerts, and smart recommendations for your team.{% endif %}</p>
+    </div>
+    <div class="hero-mark">✦</div>
+</div>
+
+<div class="card" style="max-width:760px; margin:0 auto 28px;">
+    <div class="section-head" style="margin-top:0;">
+        <h2>{% if LANGUAGE_CODE == 'ar' %}إعدادات الاتصال{% else %}Connection settings{% endif %}</h2>
+    </div>
+
+    <form method="post" class="ai-settings-form">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                    <div class="field-error">{{ field.errors|join:", " }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="info-box">
+            {% if LANGUAGE_CODE == 'ar' %}
+                إذا لم يتم إدخال مفتاح API، سيعمل النظام في وضع التحليل المحلي الاحتياطي فقط دون إرسال أي طلب إلى OpenAI.
+            {% else %}
+                If no API key is added, the system will operate in local fallback mode without sending requests to OpenAI.
+            {% endif %}
+        </div>
+
+        <button class="primary" type="submit">{% if LANGUAGE_CODE == 'ar' %}حفظ إعدادات الذكاء{% else %}Save AI settings{% endif %}</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} · SmartGrad{% endblock %}
+{% block content %}
+<div class="hero compact">
+    <div>
+        <div class="eyebrow">{% if LANGUAGE_CODE == 'ar' %}مساحة المجموعة{% else %}GROUP WORKSPACE{% endif %}</div>
+        <h1>{{ group.name }}</h1>
+        <p>{{ group.description }}</p>
+    </div>
+    <div class="hero-mark">▦</div>
+</div>
+<div class="columns">
+    <section>
+        <div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}المهام الحالية{% else %}Current tasks{% endif %}</h2></div>
+        <div class="card current-task">
+            {% for task in own_tasks %}
+                <div class="eyebrow">{% if task.assigned_to_id %}{% if LANGUAGE_CODE == 'ar' %}مهمة مخصصة لك{% else %}ASSIGNED TO YOU{% endif %}{% else %}{% if LANGUAGE_CODE == 'ar' %}مهمة للمجموعة{% else %}GROUP TASK{% endif %}{% endif %}</div>
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <p class="muted">{% if LANGUAGE_CODE == 'ar' %}تاريخ البدء{% else %}Start date{% endif %}: {{ task.start_date|default:"—" }} · {% if LANGUAGE_CODE == 'ar' %}الموعد النهائي{% else %}Deadline{% endif %}: {{ task.due_date|default:"—" }}</p>
+                <span class="status {{ task.status }}">{% if LANGUAGE_CODE == 'ar' %}{{ task.get_status_display }}{% elif task.status == 'todo' %}To do{% elif task.status == 'doing' %}In progress{% else %}Done{% endif %}</span>
+                {% if task.status != 'done' %}<a class="primary small" href="{% url 'upload_submission' task.pk %}">{% if LANGUAGE_CODE == 'ar' %}رفع ملف{% else %}Upload file{% endif %}</a>{% endif %}
+            {% empty %}
+                <p>{% if LANGUAGE_CODE == 'ar' %}لا توجد مهام حالية لك أو لمجموعتك.{% else %}No current tasks for you or your group.{% endif %}</p>
+            {% endfor %}
+        </div>
+        <div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}جدول المهام الشامل{% else %}Task overview{% endif %} · AI Master Table</h2></div>
+        <div class="card table-wrap">
+            <table>
+                <thead><tr><th>✓</th><th>{% if LANGUAGE_CODE == 'ar' %}المهمة{% else %}Task{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}الطالب{% else %}Assignee{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}البداية{% else %}Start{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}الموعد النهائي{% else %}Deadline{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}الحالة{% else %}Status{% endif %}</th></tr></thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td><form method="post" action="{% url 'toggle_task' task.pk %}">{% csrf_token %}<button class="check" title="{% if LANGUAGE_CODE == 'ar' %}تحديث الحالة{% else %}Update status{% endif %}">{% if task.status == 'done' %}✓{% else %}○{% endif %}</button></form></td>
+                        <td>{{ task.title }}</td>
+                        <td>{% if task.assigned_to_id %}{{ task.assigned_to.first_name|default:task.assigned_to.username }}{% else %}{% if LANGUAGE_CODE == 'ar' %}المجموعة{% else %}Group{% endif %}{% endif %}</td>
+                        <td>{{ task.start_date|default:"—" }}</td>
+                        <td>{{ task.due_date|default:"—" }}{% if task.status != 'done' %} <a class="secondary small" href="{% url 'upload_submission' task.pk %}">{% if LANGUAGE_CODE == 'ar' %}رفع تسليم{% else %}Submit{% endif %}</a>{% endif %}</td>
+                        <td><span class="status {{ task.status }}">{% if LANGUAGE_CODE == 'ar' %}{{ task.get_status_display }}{% elif task.status == 'todo' %}To do{% elif task.status == 'doing' %}In progress{% else %}Done{% endif %}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6">{% if LANGUAGE_CODE == 'ar' %}لم تتم إضافة مهام بعد.{% else %}No tasks have been added yet.{% endif %}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}ملفات التسليم{% else %}Submitted files{% endif %}</h2></div>
+        <div class="card">
+            {% for task in tasks %}
+                {% for submission in task.submissions.all %}
+                    <p class="notice">
+                        {{ task.title }} · {{ submission.uploaded_by.get_full_name|default:submission.uploaded_by.username }}
+                        <a href="{% url 'download_submission' submission.pk %}">{% if LANGUAGE_CODE == 'ar' %}تحميل الملف{% else %}Download file{% endif %}</a>
+                    </p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
+    <aside>
+        <div class="card ai-card">
+            <div class="analytics-grid">
+                <div><strong>{{ analytics.completion_rate }}%</strong><small>{% if LANGUAGE_CODE == 'ar' %}نسبة الإنجاز{% else %}Completion{% endif %}</small></div>
+                <div><strong>{{ analytics.overdue }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}متأخرة{% else %}Overdue{% endif %}</small></div>
+                <div><strong>{{ analytics.due_soon }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}خلال 3 أيام{% else %}Due soon{% endif %}</small></div>
+            </div>
+            <div class="ai-icon">✧</div>
+            <div class="eyebrow">{% if LANGUAGE_CODE == 'ar' %}مساعد الذكاء الاصطناعي{% else %}AI ASSISTANT{% endif %}</div>
+            <h3>{% if LANGUAGE_CODE == 'ar' %}ملخص المجموعة:{% else %}Group summary:{% endif %}</h3>
+            <p>{{ insight }}</p>
+            <small>{% if ai_provider == 'openai' %}AI model: OpenAI · {% else %}{% if LANGUAGE_CODE == 'ar' %}تحليل محلي احتياطي · {% else %}Local fallback · {% endif %}{% endif %}{% if LANGUAGE_CODE == 'ar' %}لا تُرسل أسماء الطلاب أو تفاصيلهم الشخصية إلى نموذج الذكاء الاصطناعي.{% else %}Student names and personal details are not sent to the AI model.{% endif %}</small>
+        </div>
+        <details class="ai-help">
+            <summary class="secondary">{% if LANGUAGE_CODE == 'ar' %}هل تحتاج مساعدة من الذكاء الاصطناعي؟{% else %}Need AI help?{% endif %}</summary>
+            <div class="card">
+                <h3>{% if LANGUAGE_CODE == 'ar' %}خطة الذكاء الاصطناعي للمشروع{% else %}AI project plan{% endif %}</h3>
+                <p class="muted">{% if LANGUAGE_CODE == 'ar' %}مؤشر الخطر:{% else %}Risk signal:{% endif %} {{ plan.warning }}</p>
+                <ul>
+                    {% for step in plan.recommendations %}
+                        <li><strong>{{ step.phase }}</strong> · {{ step.title }} · <em>{{ step.priority }}</em><br>{{ step.description }}</li>
+                    {% empty %}
+                        <li>{% if LANGUAGE_CODE == 'ar' %}لا توجد توصيات حالياً.{% else %}No recommendations yet.{% endif %}</li>
+                    {% endfor %}
+                </ul>
+                {% if can_manage %}
+                    <form method="post" action="{% url 'create_ai_plan' group.pk %}">{% csrf_token %}
+                        <button class="primary small">{% if LANGUAGE_CODE == 'ar' %}إنشاء خطة مهام تلقائية{% else %}Generate automatic task plan{% endif %}</button>
+                    </form>
+                {% endif %}
+            </div>
+        </details>
+        <div class="card">
+            <h3>{% if LANGUAGE_CODE == 'ar' %}تنبيهات الموعد{% else %}Deadline alerts{% endif %}</h3>
+            {% if deadline_alerts %}
+                <ul>
+                    {% for alert in deadline_alerts %}
+                        <li><strong>{{ alert.label }}</strong> · {{ alert.task.title }} · {{ alert.detail }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>{% if LANGUAGE_CODE == 'ar' %}لا توجد مهام قريبة أو متأخرة.{% else %}No near-term or overdue tasks.{% endif %}</p>
+            {% endif %}
+        </div>
+        {% if can_manage %}
+        <div class="card">
+            <h3>{% if LANGUAGE_CODE == 'ar' %}دعوة أعضاء{% else %}Invite members{% endif %}</h3>
+            <div class="invite-share-row">
+                <p class="muted">{% if LANGUAGE_CODE == 'ar' %}أرسل هذا الرابط للطلاب لطلب الانضمام بموافقة القائد:{% else %}Share this link so students can request to join your group:{% endif %}</p>
+                <button class="secondary small copy-invite" id="copy-invite" type="button" data-copy-label="{% if LANGUAGE_CODE == 'ar' %}نسخ الرابط{% else %}Copy link{% endif %}" data-copied-label="{% if LANGUAGE_CODE == 'ar' %}تم النسخ{% else %}Copied{% endif %}">{% if LANGUAGE_CODE == 'ar' %}نسخ الرابط{% else %}Copy link{% endif %}</button>
+            </div>
+            <input class="copyfield" id="invite-link" value="{{ request.scheme }}://{{ request.get_host }}{% url 'join_by_code' group.invite_code %}" readonly aria-label="{% if LANGUAGE_CODE == 'ar' %}رابط دعوة المجموعة{% else %}Group invitation link{% endif %}">
+            <p class="copy-feedback" id="copy-feedback" role="status" aria-live="polite"></p>
+            <form method="post" action="{% url 'add_member' group.pk %}">{% csrf_token %}
+                <label>{% if LANGUAGE_CODE == 'ar' %}إضافة بالرقم الجامعي{% else %}Add by university ID{% endif %}</label>
+                <input name="university_id" placeholder="{% if LANGUAGE_CODE == 'ar' %}مثال: 20240001{% else %}e.g. 20240001{% endif %}" required>
+                <button class="primary small">{% if LANGUAGE_CODE == 'ar' %}إضافة طالب{% else %}Add student{% endif %}</button>
+            </form>
+            <hr>
+            <form method="post" action="{% url 'add_teacher' group.pk %}">{% csrf_token %}
+                <label>{% if LANGUAGE_CODE == 'ar' %}إضافة مشرف باسم المستخدم{% else %}Add teacher by username{% endif %}</label>
+                <input name="username" placeholder="{% if LANGUAGE_CODE == 'ar' %}اسم المستخدم للمشرف{% else %}Teacher username{% endif %}" required>
+                <button class="secondary small">{% if LANGUAGE_CODE == 'ar' %}إضافة مشرف{% else %}Add teacher{% endif %}</button>
+            </form>
+        </div>
+        {% endif %}
+        {% if pending_requests %}
+        <div class="card">
+            <h3>{% if LANGUAGE_CODE == 'ar' %}طلبات الانضمام{% else %}Join requests{% endif %}</h3>
+            {% for r in pending_requests %}
+                <p>{{ r.student.first_name|default:r.student.username }} · {{ r.student.university_id }}</p>
+                <div class="actions">
+                    <form method="post" action="{% url 'decide_join' r.pk 'accept' %}">{% csrf_token %}<button class="primary small">{% if LANGUAGE_CODE == 'ar' %}قبول{% else %}Accept{% endif %}</button></form>
+                    <form method="post" action="{% url 'decide_join' r.pk 'reject' %}">{% csrf_token %}<button class="secondary small">{% if LANGUAGE_CODE == 'ar' %}رفض{% else %}Decline{% endif %}</button></form>
+                </div>
+            {% empty %}
+                <p class="muted">{% if LANGUAGE_CODE == 'ar' %}لا توجد طلبات معلقة.{% else %}No pending requests.{% endif %}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if can_manage %}<a class="primary block" href="{% url 'create_task' group.pk %}">＋ {% if LANGUAGE_CODE == 'ar' %}إضافة مهمة للمجموعة{% else %}Add group task{% endif %}</a>{% endif %}
+        <a class="secondary block" href="{% url 'group_report' group.pk %}">{% if LANGUAGE_CODE == 'ar' %}فتح لوحة التقارير الذكية{% else %}Open smart reports{% endif %}</a>
+    </aside>
+</div>
+{% if can_manage %}
+<script>
+(() => {
+    const button = document.getElementById("copy-invite");
+    const link = document.getElementById("invite-link");
+    const feedback = document.getElementById("copy-feedback");
+    const isArabic = "{{ LANGUAGE_CODE }}" === "ar";
+
+    button.addEventListener("click", async () => {
+        try {
+            try {
+                await navigator.clipboard.writeText(link.value);
+            } catch (clipboardError) {
+                link.focus();
+                link.select();
+                if (!document.execCommand("copy")) throw clipboardError;
+            }
+            button.textContent = button.dataset.copiedLabel;
+            feedback.textContent = isArabic ? "تم نسخ رابط الدعوة." : "Invitation link copied.";
+            window.setTimeout(() => {
+                button.textContent = button.dataset.copyLabel;
+            }, 2000);
+        } catch (error) {
+            feedback.textContent = isArabic
+                ? "تعذر نسخ الرابط تلقائياً. حدده وانسخه يدوياً."
+                : "Could not copy the link. Select and copy it manually.";
+        }
+    });
+})();
+</script>
+{% endif %}
+<section class="group-chat card" aria-labelledby="group-chat-title">
+    <div class="chat-heading">
+        <div>
+            <div class="eyebrow">{% if LANGUAGE_CODE == 'ar' %}تواصل المجموعة{% else %}GROUP CONVERSATION{% endif %}</div>
+            <h2 id="group-chat-title">{% if LANGUAGE_CODE == 'ar' %}محادثة الطلاب والمشرفين{% else %}Students and supervisors chat{% endif %}</h2>
+        </div>
+        <span class="chat-connection" id="chat-connection">{% if LANGUAGE_CODE == 'ar' %}جارٍ الاتصال...{% else %}Connecting...{% endif %}</span>
+    </div>
+    <div class="chat-messages" id="chat-messages" aria-live="polite" aria-relevant="additions text">
+        {% for message in chat_messages %}
+            <article class="chat-message{% if message.sender_id == user.pk %} own-message{% endif %}">
+                <div class="chat-message-meta">
+                    <strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong>
+                    <time datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|date:"H:i" }}</time>
+                </div>
+                <p>{{ message.content }}</p>
+            </article>
+        {% empty %}
+            <p class="chat-empty" id="chat-empty">{% if LANGUAGE_CODE == 'ar' %}ابدأوا المحادثة هنا؛ ستظهر الرسائل لجميع أعضاء المجموعة ومشرفيها.{% else %}Start a conversation here. Messages are shared with this group's members and supervisors.{% endif %}</p>
+        {% endfor %}
+    </div>
+    <form class="chat-form" id="chat-form">
+        <label class="sr-only" for="chat-input">{% if LANGUAGE_CODE == 'ar' %}اكتب رسالة للمجموعة{% else %}Write a message to the group{% endif %}</label>
+        <input id="chat-input" name="content" type="text" maxlength="2000" autocomplete="off" placeholder="{% if LANGUAGE_CODE == 'ar' %}اكتب رسالتك هنا...{% else %}Write your message...{% endif %}" required disabled>
+        <button class="primary" id="chat-send" type="submit" disabled>{% if LANGUAGE_CODE == 'ar' %}إرسال{% else %}Send{% endif %}</button>
+    </form>
+    <p class="chat-feedback" id="chat-feedback" role="status"></p>
+</section>
+<script>
+(() => {
+    const messages = document.getElementById("chat-messages");
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("chat-input");
+    const send = document.getElementById("chat-send");
+    const status = document.getElementById("chat-connection");
+    const feedback = document.getElementById("chat-feedback");
+    const empty = document.getElementById("chat-empty");
+    const isArabic = "{{ LANGUAGE_CODE }}" === "ar";
+    const scheme = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const socket = new WebSocket(`${scheme}//${window.location.host}/ws/groups/{{ group.pk }}/chat/`);
+
+    const setConnected = (connected) => {
+        input.disabled = !connected;
+        send.disabled = !connected;
+        status.textContent = connected
+            ? (isArabic ? "متصل الآن" : "Connected")
+            : (isArabic ? "غير متصل" : "Disconnected");
+        status.classList.toggle("connected", connected);
+    };
+
+    socket.addEventListener("open", () => {
+        setConnected(true);
+        input.focus();
+    });
+    socket.addEventListener("close", () => {
+        setConnected(false);
+        feedback.textContent = isArabic
+            ? "انقطع الاتصال بالمحادثة. أعد تحميل الصفحة للمحاولة مجدداً."
+            : "Chat disconnected. Reload the page to try again.";
+    });
+    socket.addEventListener("error", () => {
+        feedback.textContent = isArabic
+            ? "تعذر الاتصال بالمحادثة حالياً."
+            : "Unable to connect to chat right now.";
+    });
+    socket.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "error") {
+            feedback.textContent = isArabic
+                ? "تعذر إرسال الرسالة. تأكد من أنها لا تتجاوز 2000 حرف."
+                : "Message not sent. Make sure it is no longer than 2000 characters.";
+            return;
+        }
+        if (data.type !== "message") return;
+
+        if (empty) empty.remove();
+        const article = document.createElement("article");
+        article.className = `chat-message${data.sender_id === {{ user.pk }} ? " own-message" : ""}`;
+        const meta = document.createElement("div");
+        meta.className = "chat-message-meta";
+        const sender = document.createElement("strong");
+        sender.textContent = data.sender;
+        const time = document.createElement("time");
+        time.dateTime = data.created_at;
+        time.textContent = new Date(data.created_at).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+        const body = document.createElement("p");
+        body.textContent = data.content;
+        meta.append(sender, time);
+        article.append(meta, body);
+        messages.append(article);
+        messages.scrollTop = messages.scrollHeight;
+        feedback.textContent = "";
+    });
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const content = input.value.trim();
+        if (!content || socket.readyState !== WebSocket.OPEN) return;
+        socket.send(JSON.stringify({content}));
+        input.value = "";
+        input.focus();
+    });
+    messages.scrollTop = messages.scrollHeight;
+})();
+</script>
+{% endblock %}

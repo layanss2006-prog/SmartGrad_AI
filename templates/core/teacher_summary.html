@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}ملخص المجموعات{% else %}Group summary{% endif %} · SmartGrad{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{% if LANGUAGE_CODE == 'ar' %}ملخص المجموعات{% else %}Group summary{% endif %}</h1>
+  <p>{% if LANGUAGE_CODE == 'ar' %}مراجعة تقدم كل مجموعة وتوزيع المهام بشكل سريع.{% else %}Review each group's progress and workload at a glance.{% endif %}</p>
+</div>
+
+{% for item in summaries %}
+  <div class="card section-block">
+    <div class="section-head">
+      <h2>{{ item.group.name }}</h2>
+      <small>{% if LANGUAGE_CODE == 'ar' %}نسبة الإنجاز{% else %}Completion{% endif %}: {{ item.metrics.completion_rate }}%</small>
+    </div>
+    <div class="analytics-grid">
+      <div><strong>{{ item.metrics.total }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}إجمالي المهام{% else %}Total tasks{% endif %}</small></div>
+      <div><strong>{{ item.metrics.completed }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}مكتملة{% else %}Completed{% endif %}</small></div>
+      <div><strong>{{ item.metrics.overdue }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}متأخرة{% else %}Overdue{% endif %}</small></div>
+      <div><strong>{{ item.metrics.due_soon }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}قريبة{% else %}Due soon{% endif %}</small></div>
+    </div>
+
+    {% if item.students %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{% if LANGUAGE_CODE == 'ar' %}الطالب{% else %}Student{% endif %}</th>
+              <th>{% if LANGUAGE_CODE == 'ar' %}المهام{% else %}Tasks{% endif %}</th>
+              <th>{% if LANGUAGE_CODE == 'ar' %}نسبة الإنجاز{% else %}Completion{% endif %}</th>
+              <th>{% if LANGUAGE_CODE == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in item.students %}
+              <tr>
+                <td>{{ student.student.get_full_name|default:student.student.username }}</td>
+                <td>{{ student.metrics.total }}</td>
+                <td>{{ student.metrics.completion_rate }}%</td>
+                <td>
+                  {% if student.metrics.overdue %}
+                    {% if LANGUAGE_CODE == 'ar' %}يحتاج متابعة{% else %}Needs follow-up{% endif %}
+                  {% elif student.metrics.due_soon %}
+                    {% if LANGUAGE_CODE == 'ar' %}قريب{% else %}Due soon{% endif %}
+                  {% else %}
+                    {% if LANGUAGE_CODE == 'ar' %}مستقر{% else %}Stable{% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>{% if LANGUAGE_CODE == 'ar' %}لا يوجد طلاب مسجلون في هذه المجموعة بعد.{% else %}No students are assigned to this group yet.{% endif %}</p>
+    {% endif %}
+  </div>
+{% empty %}
+  <div class="card empty-state">
+    <p>{% if LANGUAGE_CODE == 'ar' %}لا توجد مجموعات لعرض ملخصها.{% else %}No groups are available to summarize yet.{% endif %}</p>
+  </div>
+{% endfor %}
+{% endblock %}

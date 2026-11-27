@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}لوحة تقارير الطالب{% else %}Student reporting dashboard{% endif %} · SmartGrad{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{% if LANGUAGE_CODE == 'ar' %}لوحة تقارير الطالب{% else %}Student reporting dashboard{% endif %}</h1>
+  <p>{% if LANGUAGE_CODE == 'ar' %}مؤشرات الأداء ومتابعة المهام والتوصيات الذكية الشخصية.{% else %}Performance indicators, task tracking, and personalized smart recommendations.{% endif %}</p>
+</div>
+
+<div class="card ai-card">
+  <div class="analytics-grid">
+    <div><strong>{{ report.metrics.completion_rate }}%</strong><small>{% if LANGUAGE_CODE == 'ar' %}نسبة الإنجاز{% else %}Completion{% endif %}</small></div>
+    <div><strong>{{ report.metrics.overdue }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}متأخرة{% else %}Overdue{% endif %}</small></div>
+    <div><strong>{{ report.metrics.due_soon }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}قريبة{% else %}Due soon{% endif %}</small></div>
+    <div><strong>{{ report.metrics.total }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}إجمالي المهام{% else %}Total tasks{% endif %}</small></div>
+  </div>
+  <p><strong>{% if LANGUAGE_CODE == 'ar' %}الحالة العامة{% else %}Overall status{% endif %}:</strong> {{ report.summary }}</p>
+  <p>{% if LANGUAGE_CODE == 'ar' %}الموعد الأقرب{% else %}Next deadline{% endif %}: {{ report.metrics.next_deadline|default:'—' }}</p>
+</div>
+
+<div class="card section-block">
+  <h2>{% if LANGUAGE_CODE == 'ar' %}توصيات الذكاء الاصطناعي{% else %}AI recommendations{% endif %}</h2>
+  <ul>
+    {% for item in report.recommendations %}
+      <li><strong>{{ item.priority }}</strong> · {{ item.title }} — {{ item.description }}</li>
+    {% empty %}
+      <li>{% if LANGUAGE_CODE == 'ar' %}لا توجد توصيات حالياً.{% else %}No recommendations yet.{% endif %}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card section-block">
+  <h2>{% if LANGUAGE_CODE == 'ar' %}مهامي الحالية{% else %}Current tasks{% endif %}</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{% if LANGUAGE_CODE == 'ar' %}المهمة{% else %}Task{% endif %}</th>
+          <th>{% if LANGUAGE_CODE == 'ar' %}المجموعة{% else %}Group{% endif %}</th>
+          <th>{% if LANGUAGE_CODE == 'ar' %}الموعد{% else %}Due{% endif %}</th>
+          <th>{% if LANGUAGE_CODE == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in report.tasks %}
+          <tr>
+            <td>{{ task.title }}</td>
+            <td><a href="{% url 'group_detail' task.group_id %}">{{ task.group.name }}</a></td>
+            <td>{{ task.due_date|default:'—' }}</td>
+            <td><span class="status {{ task.status }}">{{ task.get_status_display }}</span></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">{% if LANGUAGE_CODE == 'ar' %}لا توجد مهام مسندة لك حاليًا.{% else %}No tasks assigned to you yet.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

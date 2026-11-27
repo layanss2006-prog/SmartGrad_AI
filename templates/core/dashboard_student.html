@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}لوحة الطالبة{% else %}Student Dashboard{% endif %} · SmartGrad{% endblock %}
+{% block content %}
+<div class="hero"><div><div class="eyebrow">SMARTGRAD · STUDENT SPACE</div><h1>{% if LANGUAGE_CODE == 'ar' %}مرحباً {{ user.first_name|default:user.username }} 👋{% else %}Welcome {{ user.first_name|default:user.username }} 👋{% endif %}</h1><p>{% if LANGUAGE_CODE == 'ar' %}هذه مساحتك الشخصية لمتابعة مهامك وتسليماتك وتقدم مجموعاتك.{% else %}Your personal space for assignments, submissions and group progress.{% endif %}</p></div><div class="hero-mark">🎓</div></div>
+<div class="stats"><div class="stat"><span>{% if LANGUAGE_CODE == 'ar' %}مجموعاتي{% else %}My groups{% endif %}</span><strong>{{ groups|length }}</strong></div><div class="stat"><span>{% if LANGUAGE_CODE == 'ar' %}مهام بانتظارك{% else %}Open tasks{% endif %}</span><strong>{{ pending_tasks }}</strong></div><div class="stat"><span>{% if LANGUAGE_CODE == 'ar' %}مهام مكتملة{% else %}Completed{% endif %}</span><strong>{{ completed_tasks }}</strong></div></div>
+<div class="student-actions"><a class="primary" href="{% url 'create_group' %}">＋ {% if LANGUAGE_CODE == 'ar' %}إنشاء مجموعة جديدة{% else %}Create a group{% endif %}</a><a class="secondary" href="{% url 'student_report' %}">{% if LANGUAGE_CODE == 'ar' %}لوحة التقارير الذكية{% else %}Smart reports{% endif %}</a><div class="action-note">{% if LANGUAGE_CODE == 'ar' %}يمكنك أيضاً الانضمام إلى مجموعة من خلال رابط الدعوة الذي ترسله لك القائدة.{% else %}You can also join a group using an invitation link from its leader.{% endif %}</div></div>
+<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}لوحة تقدم الطالب{% else %}Student productivity panel{% endif %}</h2></div>
+<div class="card ai-card">
+    <div class="analytics-grid">
+        <div><strong>{{ student_metrics.completion_rate }}%</strong><small>{% if LANGUAGE_CODE == 'ar' %}نسبة الإنجاز{% else %}Completion{% endif %}</small></div>
+        <div><strong>{{ student_metrics.overdue }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}مستحقة{% else %}Overdue{% endif %}</small></div>
+        <div><strong>{{ student_metrics.due_soon }}</strong><small>{% if LANGUAGE_CODE == 'ar' %}قريبة{% else %}Due soon{% endif %}</small></div>
+    </div>
+    {% if student_metrics.next_deadline %}
+    <p>{% if LANGUAGE_CODE == 'ar' %}الموعد الأقرب:{% else %}Next deadline:{% endif %} {{ student_metrics.next_deadline }}</p>
+    {% endif %}
+    <ul>
+        {% for task in student_metrics.priority_tasks %}
+            <li><strong>{{ task.title }}</strong> · {% if LANGUAGE_CODE == 'ar' %}{{ task.group.name }}{% else %}{{ task.group.name }}{% endif %} · {{ task.due_date|default:'—' }}</li>
+        {% empty %}
+            <li>{% if LANGUAGE_CODE == 'ar' %}لا توجد مهام حالية تحتاج متابعة.{% else %}No active tasks require attention yet.{% endif %}</li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}تنبيهات المواعيد{% else %}Deadline alerts{% endif %}</h2></div>
+<div class="card">
+    {% if deadline_alerts %}
+        <ul>
+            {% for alert in deadline_alerts %}
+                <li><strong>{{ alert.label }}</strong> · {{ alert.task.title }} · {{ alert.detail }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{% if LANGUAGE_CODE == 'ar' %}لا توجد تنبيهات حالياً.{% else %}No deadline alerts right now.{% endif %}</p>
+    {% endif %}
+</div>
+<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}مجموعاتي الدراسية{% else %}My study groups{% endif %}</h2></div>
+<div class="cards">{% for group in groups %}<a class="group-card" href="{% url 'group_detail' group.pk %}"><span class="group-icon">▦</span><h3>{{ group.name }}</h3><p>{{ group.members.count }} · {% if LANGUAGE_CODE == 'ar' %}أعضاء{% else %}members{% endif %} &nbsp; {{ group.tasks.count }} · {% if LANGUAGE_CODE == 'ar' %}مهام{% else %}tasks{% endif %}</p><span class="arrow">←</span></a>{% empty %}<div class="empty">{% if LANGUAGE_CODE == 'ar' %}لم تنضمي إلى مجموعة بعد. أنشئي مجموعة جديدة أو افتحي رابط دعوة للانضمام.{% else %}You have not joined a group yet. Create one or open an invitation link.{% endif %}</div>{% endfor %}</div>
+<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}مهامي ومهام مجموعتي{% else %}My tasks and group tasks{% endif %}</h2></div><div class="card table-wrap"><table><thead><tr><th>{% if LANGUAGE_CODE == 'ar' %}المهمة{% else %}Task{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}المجموعة{% else %}Group{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}المسؤول{% else %}Assignee{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}تاريخ البدء{% else %}Start date{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}الموعد النهائي{% else %}Deadline{% endif %}</th><th>{% if LANGUAGE_CODE == 'ar' %}الحالة{% else %}Status{% endif %}</th></tr></thead><tbody>{% for task in tasks %}<tr><td>{{ task.title }}</td><td><a href="{% url 'group_detail' task.group.pk %}">{{ task.group.name }}</a></td><td>{% if task.assigned_to_id %}{{ task.assigned_to.first_name|default:task.assigned_to.username }}{% else %}{% if LANGUAGE_CODE == 'ar' %}المجموعة{% else %}Group{% endif %}{% endif %}</td><td>{{ task.start_date|default:'—' }}</td><td>{{ task.due_date|default:'—' }}</td><td><span class="status {{ task.status }}">{{ task.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="6">{% if LANGUAGE_CODE == 'ar' %}لا توجد مهام مسندة إليك أو إلى مجموعتك حالياً.{% else %}No tasks assigned to you or your groups yet.{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+{% if notices %}<div class="section-head"><h2>{% if LANGUAGE_CODE == 'ar' %}الإشعارات{% else %}Notifications{% endif %}</h2></div><div class="card">{% for n in notices %}<p class="notice">• {{ n.message }} <small>{{ n.created_at|date:'Y-m-d H:i' }}</small></p>{% endfor %}</div>{% endif %}
+{% endblock %}

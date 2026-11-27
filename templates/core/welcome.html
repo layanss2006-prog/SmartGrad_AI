@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{% if LANGUAGE_CODE == 'ar' %}مرحباً بك في SmartGrad{% else %}Welcome to SmartGrad{% endif %}{% endblock %}
+{% block content %}
+<section class="welcome-panel">
+  <div class="welcome-heading">
+    <div class="eyebrow">SMARTGRAD</div>
+    <h1>{% if LANGUAGE_CODE == 'ar' %}عن برنامج SmartGrad{% else %}About SmartGrad Program{% endif %}</h1>
+    <p>{% if LANGUAGE_CODE == 'ar' %}اكتشف كيف تساعد المنصة الطلاب والمشرفين على تنظيم مشاريع التخرج والعمل الأكاديمي.{% else %}Discover how our platform empowers students and supervisors with academic project management tools.{% endif %}</p>
+  </div>
+
+  <div class="welcome-features">
+    <article class="welcome-feature">
+      <div class="feature-icon" aria-hidden="true">💻</div>
+      <h2>{% if LANGUAGE_CODE == 'ar' %}مشاريع التخصصات{% else %}Projects by major{% endif %}</h2>
+      <p>{% if LANGUAGE_CODE == 'ar' %}تعرّف على أفكار ومصادر مشاريع متنوعة في علوم الحاسب والتخصصات التقنية.{% else %}Explore project ideas and resources across computer science and technology majors.{% endif %}</p>
+      <a class="feature-link" href="{% url 'projects' %}">{% if LANGUAGE_CODE == 'ar' %}تصفح المشاريع{% else %}Browse projects{% endif %}<span aria-hidden="true">←</span></a>
+    </article>
+    <article class="welcome-feature">
+      <div class="feature-icon" aria-hidden="true">👥</div>
+      <h2>{% if LANGUAGE_CODE == 'ar' %}تكوين الفريق{% else %}Team formation{% endif %}</h2>
+      <p>{% if LANGUAGE_CODE == 'ar' %}تعاون مع زملائك، وشكّل فريق مشروعك، ووزّع المهام بسهولة.{% else %}Connect with classmates, form your project team, and divide work with ease.{% endif %}</p>
+    </article>
+    <article class="welcome-feature">
+      <div class="feature-icon" aria-hidden="true">✨</div>
+      <h2>{% if LANGUAGE_CODE == 'ar' %}متابعة ذكية{% else %}AI tracking{% endif %}</h2>
+      <p>{% if LANGUAGE_CODE == 'ar' %}تابع تقدم المهام والمواعيد مع ملخصات وتوصيات تساعد فريقك على الإنجاز.{% else %}Track tasks and milestones with summaries and recommendations that help your team make progress.{% endif %}</p>
+    </article>
+  </div>
+
+  <div class="welcome-actions">
+    <a class="secondary" href="{% url 'about' %}">{% if LANGUAGE_CODE == 'ar' %}عن المنصة{% else %}About SmartGrad{% endif %}</a>
+    <a class="primary" href="{% url 'login' %}">{% if LANGUAGE_CODE == 'ar' %}متابعة إلى تسجيل الدخول{% else %}Proceed to login{% endif %}</a>
+  </div>
+</section>
+{% endblock %}
